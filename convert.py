@@ -57,7 +57,7 @@ om_type_mapping = {
 
 def get_meta(name):
     print 'Reading schema %s from oracle...' % name
-    q = oconn.query("SELECT * FROM ALL_TAB_COLUMNS WHERE TABLE_NAME = '%s' AND OWNER = 'APP_MANAGER'" % name)  
+    q = oconn.query("SELECT * FROM ALL_TAB_COLUMNS WHERE TABLE_NAME = '%s' AND OWNER = '%s'" % (name, opts.od))  
     rows = q.fetchall()
     columns = map(lambda row: {
             'column_name': row['COLUMN_NAME'],
@@ -104,7 +104,7 @@ def dump_data(name, step):
         mconn.execute(insert_sql)
 
 def table_exists(name):
-    q = mconn.query("SELECT * FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = 'APP_MANAGER' AND `TABLE_NAME` = '%s'" % name)
+    q = mconn.query("SELECT * FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '%s' AND `TABLE_NAME` = '%s'" % (opts.md, name))
     return (q.fetchone() is not None)
 
 def dump_table(name):
@@ -114,7 +114,7 @@ def dump_table(name):
     dump_data(name, int(batch_size / size))
 
 def get_table_names(pattern):
-    q = oconn.query("SELECT TABLE_NAME FROM ALL_TABLES WHERE TABLE_NAME LIKE '%s' AND OWNER = 'APP_MANAGER'" % pattern)
+    q = oconn.query("SELECT TABLE_NAME FROM ALL_TABLES WHERE TABLE_NAME LIKE '%s' AND OWNER = '%s'" % (opts.od, pattern))
     return map(lambda x:x['TABLE_NAME'], q.fetchall())
 
 for pattern in table_patterns:
